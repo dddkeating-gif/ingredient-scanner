@@ -19,9 +19,9 @@ export async function POST(request) {
     
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
     
-    // FIXED: Changed model to 'gemini-1.5-flash-001' (Stable version)
+    // FIXED: Switched to 'gemini-1.5-pro' (Most stable model)
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash-001",
+      model: "gemini-1.5-pro",
       generationConfig: { responseMimeType: "application/json" } 
     });
 
@@ -51,6 +51,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("Gemini Analysis Failed:", error);
-    return NextResponse.json({ error: "Failed to analyze image" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to analyze image. Try a smaller photo." }, { status: 500 });
   }
 }
