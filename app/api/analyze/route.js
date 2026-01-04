@@ -18,8 +18,10 @@ export async function POST(request) {
     const base64Data = Buffer.from(bytes).toString('base64');
     
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    
+    // FIXED: Changed model to 'gemini-1.5-flash-001' (Stable version)
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-flash-001",
       generationConfig: { responseMimeType: "application/json" } 
     });
 
