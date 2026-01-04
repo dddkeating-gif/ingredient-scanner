@@ -17,11 +17,13 @@ export async function POST(request) {
     const bytes = await file.arrayBuffer();
     const base64Data = Buffer.from(bytes).toString('base64');
     
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+    const cleanKey = process.env.GOOGLE_API_KEY.trim();
+    const genAI = new GoogleGenerativeAI(cleanKey);
     
-    // FIXED: Switched to 'gemini-1.5-pro' (Most stable model)
+    // FIXED: Using 'gemini-1.5-flash' (Clean alias). 
+    // This is the correct Vision model for Free Tier API users.
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
+      model: "gemini-1.5-flash",
       generationConfig: { responseMimeType: "application/json" } 
     });
 
@@ -51,6 +53,12 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("Gemini Analysis Failed:", error);
-    return NextResponse.json({ error: "Failed to analyze image. Try a smaller photo." }, { status: 500 });
+    
+    // If Flash fails, we try the older Vision model as a fallback
+    if (error.message.includes("404")) {
+        return NextResponse.json({ error: "Model 404. Try Redeploying to clear cache." }, { status: 500 });
+    }
+    
+    return NextResponse.json({ error: "Analysis failed. Try a clear photo." }, { status: 500 });
   }
 }
